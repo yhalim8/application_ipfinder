@@ -44,6 +44,7 @@ public class IpFinderActivity extends AppCompatActivity {
 
     private String latLong = "";
     private String latestSummary = "";
+    private String latestCity = "";
 
     private SharedPreferences sharedPreferences;
     private static final String PREFS_NAME = "ipFinderPrefs";
@@ -78,6 +79,7 @@ public class IpFinderActivity extends AppCompatActivity {
             }
             Intent mapIntent = new Intent(this, MapsActivity.class);
             mapIntent.putExtra("LatLand", latLong);
+            mapIntent.putExtra("CityName", latestCity);
             startActivity(mapIntent);
         });
 
@@ -135,18 +137,19 @@ public class IpFinderActivity extends AppCompatActivity {
     private void bindResult(String response) {
         try {
             JSONObject jsonObject = new JSONObject(response);
-            String ip = jsonObject.optString("ip", "-");
-            String city = jsonObject.optString("city", "-");
-            String region = jsonObject.optString("region", "-");
-            String country = jsonObject.optString("country", "-");
-            String org = jsonObject.optString("org", "-");
-            latLong = jsonObject.optString("loc", "");
+            String ip = cleanValue(jsonObject.optString("ip", ""));
+            String city = cleanValue(jsonObject.optString("city", ""));
+            String region = cleanValue(jsonObject.optString("region", ""));
+            String country = cleanValue(jsonObject.optString("country", ""));
+            String org = cleanValue(jsonObject.optString("org", ""));
+            latLong = cleanLocation(jsonObject.optString("loc", ""));
+            latestCity = city.equals("-") ? "" : city;
 
-            ipValue.setText("IP: " + ip);
-            cityValue.setText("City: " + city);
-            regionValue.setText("Region: " + region);
-            countryValue.setText("Country: " + country);
-            orgValue.setText("Provider: " + org);
+            ipValue.setText(getString(R.string.result_ip, ip));
+            cityValue.setText(getString(R.string.result_city, city));
+            regionValue.setText(getString(R.string.result_region, region));
+            countryValue.setText(getString(R.string.result_country, country));
+            orgValue.setText(getString(R.string.result_provider, org));
 
             latestSummary = "IP: " + ip + "\n"
                     + "City: " + city + "\n"
@@ -168,11 +171,13 @@ public class IpFinderActivity extends AppCompatActivity {
     }
 
     private void setEmptyState() {
-        ipValue.setText("IP: -");
-        cityValue.setText("City: -");
-        regionValue.setText("Region: -");
-        countryValue.setText("Country: -");
-        orgValue.setText("Provider: -");
+        ipValue.setText(getString(R.string.result_ip, "-"));
+        cityValue.setText(getString(R.string.result_city, "-"));
+        regionValue.setText(getString(R.string.result_region, "-"));
+        countryValue.setText(getString(R.string.result_country, "-"));
+        orgValue.setText(getString(R.string.result_provider, "-"));
+        latLong = "";
+        latestCity = "";
     }
 
     private void showError(String message) {
@@ -198,6 +203,32 @@ public class IpFinderActivity extends AppCompatActivity {
             return new ArrayList<>();
         }
         return new ArrayList<>(Arrays.asList(saved.split(",")));
+    }
+
+    private String cleanValue(String value) {
+        if (value == null) {
+            return "-";
+        }
+
+        String trimmed = value.trim();
+        if (trimmed.isEmpty() || "null".equalsIgnoreCase(trimmed)) {
+            return "-";
+        }
+
+        return trimmed;
+    }
+
+    private String cleanLocation(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        String trimmed = value.trim();
+        if (trimmed.isEmpty() || "null".equalsIgnoreCase(trimmed) || !trimmed.contains(",")) {
+            return "";
+        }
+
+        return trimmed;
     }
 
     private void loadRecentIps() {
