@@ -5,37 +5,50 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    EditText username,password;
-    ImageButton login;
-    SharedPreferences sharedPreferences;
+    private EditText username;
+    private EditText password;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        username=findViewById(R.id.usrname);
-        password=findViewById(R.id.pswd);
-        login=findViewById(R.id.btnLogin);
-        sharedPreferences = getSharedPreferences("loginPref",
-                MODE_PRIVATE);
 
+        username = findViewById(R.id.usrname);
+        password = findViewById(R.id.pswd);
+        sharedPreferences = getSharedPreferences("loginPref", MODE_PRIVATE);
+
+        username.setText(sharedPreferences.getString("emailKey", ""));
+
+        findViewById(R.id.btnLogin).setOnClickListener(view -> login());
     }
-    public  void login(View view){
-        if(sharedPreferences==null) sharedPreferences=getSharedPreferences("loginPref",MODE_PRIVATE);
-        String n = username.getText().toString();
-        String e = password.getText().toString();
+
+    private void login() {
+        String enteredUsername = username.getText().toString().trim();
+        String enteredPassword = password.getText().toString();
+
+        if (enteredUsername.isEmpty()) {
+            username.setError("Username is required");
+            username.requestFocus();
+            return;
+        }
+
+        if (enteredPassword.length() < 4) {
+            password.setError("Password must contain at least 4 characters");
+            password.requestFocus();
+            return;
+        }
+
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("emailKey", n);
-        editor.putString("pwdKey", e);
-        editor.commit();
-        username.setText("");
-        password.setText("");
-        Intent intent = new Intent(MainActivity.this,IpFinderActivity.class);
-        startActivity(intent);
+        editor.putString("emailKey", enteredUsername);
+        editor.putString("pwdKey", enteredPassword);
+        editor.apply();
+
+        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(MainActivity.this, IpFinderActivity.class));
     }
 }
