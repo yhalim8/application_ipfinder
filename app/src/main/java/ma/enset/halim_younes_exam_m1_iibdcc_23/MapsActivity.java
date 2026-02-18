@@ -1,50 +1,77 @@
 package ma.enset.halim_younes_exam_m1_iibdcc_23;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.widget.Toast;
 
-import ma.enset.halim_younes_exam_m1_iibdcc_23.R;
-import ma.enset.halim_younes_exam_m1_iibdcc_23.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private MapView mapView;
-    private GoogleMap map;
-    private String LatLand;
+    private LatLng location;
+    private String cityName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        mapView=findViewById(R.id.mapView);
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
-        Intent intent=getIntent();
-        LatLand=intent.getStringExtra("LatLand");
-    }
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map=googleMap;
-        String Lat=LatLand.split(",")[0];
-        String Long=LatLand.split(",")[1];
-        LatLng location=new LatLng(Double.parseDouble(Lat),Double.parseDouble(Long));
-        map.addMarker(new MarkerOptions().position(location));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(location,10));
+
+        String latLong = getIntent().getStringExtra("LatLand");
+        cityName = getIntent().getStringExtra("CityName");
+        location = parseLatLng(latLong);
+
+        if (location == null) {
+            Toast.makeText(this, R.string.location_not_available, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+
+        if (mapFragment == null) {
+            Toast.makeText(this, R.string.map_unavailable, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        mapFragment.getMapAsync(this);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        mapView.onResume();
+    public void onMapReady(GoogleMap googleMap) {
+        String markerTitle = TextUtils.isEmpty(cityName)
+                ? getString(R.string.unknown_city)
+                : cityName;
+
+        googleMap.addMarker(new MarkerOptions()
+                .position(location)
+                .title(markerTitle));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 11f));
+    }
+
+    private LatLng parseLatLng(String latLong) {
+        if (TextUtils.isEmpty(latLong) || !latLong.contains(",")) {
+            return null;
+        }
+
+        String[] parts = latLong.split(",");
+        if (parts.length != 2) {
+            return null;
+        }
+
+        try {
+            double latitude = Double.parseDouble(parts[0].trim());
+            double longitude = Double.parseDouble(parts[1].trim());
+            return new LatLng(latitude, longitude);
+        } catch (NumberFormatException exception) {
+            return null;
+        }
     }
 }

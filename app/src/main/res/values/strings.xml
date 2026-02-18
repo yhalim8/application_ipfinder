@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">IP Finder Pro</string>
-    <string name="title_activity_maps">Location map</string>
+    <string name="title_activity_maps">Location Map</string>
 
     <string name="welcome_title">Welcome back</string>
     <string name="welcome_subtitle">Sign in to explore IP details with a clean and fast workflow.</string>
@@ -18,4 +18,14 @@
     <string name="copy_button">Copy</string>
     <string name="share_button">Share</string>
     <string name="recent_searches">Recent Searches</string>
+
+    <string name="result_ip">IP: %1$s</string>
+    <string name="result_city">City: %1$s</string>
+    <string name="result_region">Region: %1$s</string>
+    <string name="result_country">Country: %1$s</string>
+    <string name="result_provider">Provider: %1$s</string>
+
+    <string name="location_not_available">Location is not available for this IP.</string>
+    <string name="map_unavailable">Map could not be loaded.</string>
+    <string name="unknown_city">Unknown city</string>
 </resources>
