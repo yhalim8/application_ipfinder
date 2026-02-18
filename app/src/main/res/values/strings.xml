@@ -1,4 +1,21 @@
 <resources>
-    <string name="app_name">halim_younes_exam_M1_IIBDCC_23</string>
-    <string name="title_activity_maps" />
+    <string name="app_name">IP Finder Pro</string>
+    <string name="title_activity_maps">Location map</string>
+
+    <string name="welcome_title">Welcome back</string>
+    <string name="welcome_subtitle">Sign in to explore IP details with a clean and fast workflow.</string>
+    <string name="username_label">Username or Email</string>
+    <string name="username_hint">Enter your email</string>
+    <string name="password_label">Password</string>
+    <string name="password_hint">Enter your password</string>
+    <string name="login_button">Continue</string>
+
+    <string name="ip_finder_title">IP Intelligence</string>
+    <string name="ip_hint">Enter an IP (or leave empty for your current IP)</string>
+    <string name="search_button">Search</string>
+    <string name="result_title">Search Result</string>
+    <string name="show_map_button">Map</string>
+    <string name="copy_button">Copy</string>
+    <string name="share_button">Share</string>
+    <string name="recent_searches">Recent Searches</string>
 </resources>
